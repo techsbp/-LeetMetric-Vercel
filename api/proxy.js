@@ -6,9 +6,9 @@ export default async function handler(request, response) {
   
   // Add this new line to prevent caching
   // Add these 3 lines to strongly prevent caching
-response.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
-response.setHeader('Pragma', 'no-cache');
-response.setHeader('Expires', '0');
+  response.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+  response.setHeader('Pragma', 'no-cache');
+  response.setHeader('Expires', '0');
 
   // Handle preflight requests for CORS
   if (request.method === 'OPTIONS') {
@@ -52,4 +52,5 @@ response.setHeader('Expires', '0');
     return response.status(500).json({ error: error.message });
   }
 }
+
 
