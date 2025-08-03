@@ -1,13 +1,18 @@
 export default async function handler(request, response) {
-  // Set CORS headers to allow requests from any origin
+  // Set CORS headers
   response.setHeader('Access-Control-Allow-Origin', '*');
   response.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   response.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  
+  // Add this new line to prevent caching
+  response.setHeader('Cache-Control', 'no-cache');
 
   // Handle preflight requests for CORS
   if (request.method === 'OPTIONS') {
     return response.status(200).end();
   }
+
+  // ... the rest of your code remains exactly the same ...
 
   if (request.method !== 'POST') {
     return response.status(405).json({ message: 'Method not allowed' });
