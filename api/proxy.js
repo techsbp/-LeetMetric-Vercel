@@ -1,44 +1,36 @@
 export default async function handler(request, response) {
-  // Only allow POST requests
+  // Set CORS headers to allow requests from any origin
+  response.setHeader('Access-Control-Allow-Origin', '*');
+  response.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  response.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+  // Handle preflight requests for CORS
+  if (request.method === 'OPTIONS') {
+    return response.status(200).end();
+  }
+
   if (request.method !== 'POST') {
     return response.status(405).json({ message: 'Method not allowed' });
   }
 
   try {
     const { username } = request.body;
-
-    // The LeetCode API endpoint
     const leetcodeApiUrl = 'https://leetcode.com/graphql/';
-
-    // The GraphQL query
     const query = `
       query userSessionProgress($username: String!) {
-        allQuestionsCount {
-          difficulty
-          count
-        }
+        allQuestionsCount { difficulty count }
         matchedUser(username: $username) {
           submitStats: submitStatsGlobal {
-            acSubmissionNum {
-              difficulty
-              count
-              submissions
-            }
+            acSubmissionNum { difficulty count submissions }
           }
         }
       }
     `;
 
-    // Fetch data from LeetCode's API
     const apiResponse = await fetch(leetcodeApiUrl, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        query,
-        variables: { username },
-      }),
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ query, variables: { username } }),
     });
 
     if (!apiResponse.ok) {
@@ -46,12 +38,9 @@ export default async function handler(request, response) {
     }
 
     const data = await apiResponse.json();
-
-    // Send the data back to your frontend
-    response.status(200).json(data);
+    return response.status(200).json(data);
 
   } catch (error) {
-    // Handle any errors
-    response.status(500).json({ error: error.message });
+    return response.status(500).json({ error: error.message });
   }
 }
