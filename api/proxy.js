@@ -45,15 +45,17 @@ export default async function handler(request, response) {
     });
 
     if (!apiResponse.ok) {
-      throw new Error(`LeetCode API responded with status ${apiResponse.status}`);
+    throw new Error(`LeetCode API responded with status ${apiResponse.status}`);
     }
 
     const data = await apiResponse.json();
-    return response.status(200).json(data);
+    console.log('Data received from LeetCode:', JSON.stringify(data, null, 2));
 
+    return response.status(200).json(data);
   } catch (error) {
     return response.status(500).json({ error: error.message });
   }
 }
+
 
 
