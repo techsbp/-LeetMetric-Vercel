@@ -1,28 +1,28 @@
 export default async function handler(request, response) {
-  // Set CORS headers
+  // Set headers to prevent caching and allow CORS
   response.setHeader('Access-Control-Allow-Origin', '*');
   response.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   response.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-  
-  // Add this new line to prevent caching
-  // Add these 3 lines to strongly prevent caching
   response.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
   response.setHeader('Pragma', 'no-cache');
   response.setHeader('Expires', '0');
 
-  // Handle preflight requests for CORS
+  // Handle preflight requests
   if (request.method === 'OPTIONS') {
     return response.status(200).end();
   }
 
-  // ... the rest of your code remains exactly the same ...
-
+  // Only allow POST requests
   if (request.method !== 'POST') {
     return response.status(405).json({ message: 'Method not allowed' });
   }
 
   try {
     const { username } = request.body;
+
+    // This is the first new line for debugging
+    console.log(`Server received request for username: ${username}`);
+
     const leetcodeApiUrl = 'https://leetcode.com/graphql/';
     const query = `
       query userSessionProgress($username: String!) {
@@ -34,6 +34,9 @@ export default async function handler(request, response) {
         }
       }
     `;
+    
+    // This is the second new line for debugging
+    console.log(`Fetching data from LeetCode for: ${username}`);
 
     const apiResponse = await fetch(leetcodeApiUrl, {
       method: 'POST',
