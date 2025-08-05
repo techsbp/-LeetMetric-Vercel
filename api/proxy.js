@@ -20,22 +20,24 @@ export default async function handler(request, response) {
   try {
     const { username } = request.body;
 
-    // This is the first new line for debugging
     console.log(`Server received request for username: ${username}`);
 
     const leetcodeApiUrl = 'https://leetcode.com/graphql/';
+
+    // --- THIS IS THE CORRECTED QUERY ---
+    // We have added totalSubmissionNum to the submitStats section.
     const query = `
       query userSessionProgress($username: String!) {
         allQuestionsCount { difficulty count }
         matchedUser(username: $username) {
           submitStats: submitStatsGlobal {
             acSubmissionNum { difficulty count submissions }
+            totalSubmissionNum { difficulty count submissions }
           }
         }
       }
     `;
     
-    // This is the second new line for debugging
     console.log(`Fetching data from LeetCode for: ${username}`);
 
     const apiResponse = await fetch(leetcodeApiUrl, {
@@ -45,7 +47,7 @@ export default async function handler(request, response) {
     });
 
     if (!apiResponse.ok) {
-    throw new Error(`LeetCode API responded with status ${apiResponse.status}`);
+      throw new Error(`LeetCode API responded with status ${apiResponse.status}`);
     }
 
     const data = await apiResponse.json();
@@ -56,6 +58,5 @@ export default async function handler(request, response) {
     return response.status(500).json({ error: error.message });
   }
 }
-
 
 
